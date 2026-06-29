@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>安装万年历 · 全平台</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Microsoft YaHei',sans-serif;
+      background:linear-gradient(135deg,#1a0a0a,#2d1515,#1a0a2e,#0d0d1a);
+      color:#f0e6d3;min-height:100vh;padding:20px}
+    .container{max-width:680px;margin:0 auto}
+    h1{text-align:center;font-size:28px;background:linear-gradient(180deg,#F0D060,#D4A017,#B8860B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:24px 0 8px}
+    .sub{text-align:center;color:#a09080;font-size:14px;margin-bottom:28px}
+    .hero{text-align:center;padding:32px 20px;background:rgba(76,175,80,0.08);border:1px solid rgba(76,175,80,0.3);border-radius:20px;margin-bottom:24px}
+    .hero .big{font-size:48px;margin-bottom:8px}
+    .hero h2{color:#66BB6A;font-size:22px;margin-bottom:4px}
+    .hero p{color:#a09080;font-size:13px}
+    .step-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:20px 0}
+    .step{background:rgba(30,15,15,0.85);border:1px solid rgba(212,160,23,0.3);border-radius:16px;padding:20px 16px;text-align:center;flex:1;min-width:140px}
+    .step .num{width:32px;height:32px;border-radius:50%;background:rgba(76,175,80,0.2);color:#66BB6A;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;margin-bottom:8px}
+    .step h4{color:#F0D060;font-size:14px}
+    .step p{color:#a09080;font-size:11px;margin-top:4px;line-height:1.5}
+    .platforms{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:24px}
+    .plat{background:rgba(30,15,15,0.85);border:1px solid rgba(212,160,23,0.2);border-radius:14px;padding:20px;text-align:center}
+    .plat .icon{font-size:40px;margin-bottom:8px}
+    .plat h4{color:#F0D060;font-size:15px}
+    .plat .how{font-size:11px;color:#888;margin-top:6px;line-height:1.5}
+    .native-note{background:rgba(255,152,0,0.06);border:1px solid rgba(255,152,0,0.2);border-radius:14px;padding:16px;margin-top:20px;text-align:center}
+    .native-note h4{color:#FFA726;font-size:14px}
+    .native-note a{color:#F0D060;font-size:12px}
+    .back{display:block;text-align:center;color:#a09080;font-size:13px;margin-top:24px}
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>📅 安装万年历</h1>
+  <p class="sub">PWA 免安装包 · 全平台通用 · 桌面图标启动</p>
+
+  <div class="hero">
+    <div class="big">📲</div>
+    <h2>3 步安装到手机</h2>
+    <p>无需下载任何文件，浏览器直接安装</p>
+    <div class="step-row">
+      <div class="step">
+        <div class="num">1</div>
+        <h4>打开网址</h4>
+        <p>浏览器访问<br><code style="background:rgba(0,0,0,0.3);padding:2px 8px;border-radius:4px;color:#F0D060;font-size:12px">123.207.204.92:2121</code></p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h4>添加到桌面</h4>
+        <p>浏览器菜单<br>「添加到主屏幕」</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h4>开始使用</h4>
+        <p>桌面图标启动<br>全屏原生体验</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="platforms">
+    <div class="plat">
+      <div class="icon">🤖</div>
+      <h4>Android</h4>
+      <div class="how">Chrome/Edge 打开<br>⋮ → 添加到主屏幕<br>✅ 支持后台定位</div>
+    </div>
+    <div class="plat">
+      <div class="icon">🍎</div>
+      <h4>iPhone / iPad</h4>
+      <div class="how">Safari 打开<br>分享 → 添加到主屏幕<br>✅ 桌面全屏图标</div>
+    </div>
+    <div class="plat">
+      <div class="icon">🔷</div>
+      <h4>鸿蒙 HarmonyOS</h4>
+      <div class="how">浏览器打开<br>⋮ → 添加至桌面<br>✅ ArkWeb 原生渲染</div>
+    </div>
+  </div>
+
+  <div class="native-note">
+    <h4>🔧 原生APK/IPA/HAP 构建</h4>
+    <p style="font-size:12px;color:#a09080;margin-top:4px">
+      需要完整原生安装包？下载源码自行编译：<br>
+      <a href="/downloads/perpetual-calendar-android.zip">Android 源码</a> ·
+      <a href="/downloads/perpetual-calendar-ios.zip">iOS 源码</a> ·
+      <a href="/downloads/perpetual-calendar-harmonyos.zip">鸿蒙 源码</a>
+    </p>
+  </div>
+
+  <a href="/" class="back">← 打开万年历</a>
+</div>
+</body>
+</html>

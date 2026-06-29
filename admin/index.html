@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>锦衣卫 · 设备后台管理</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0a0f;--card:#111118;--border:#1a1a2e;--gold:#C9A84C;--text:#c8c8d0;
+           --accent:#dc2626;--green:#22c55e;--blue:#3b82f6;--orange:#f59e0b;--pink:#ec4899}
+    body{font-family:'Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+    /* 登录 */
+    .login-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:2000}
+    .login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px;width:360px}
+    .login-box h1{text-align:center;color:var(--gold);font-size:28px;margin-bottom:4px}
+    .login-box .sub{text-align:center;color:#666;font-size:13px;margin-bottom:24px}
+    .login-box input{width:100%;padding:12px;margin-bottom:12px;background:#000;border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;outline:none}
+    .login-box input:focus{border-color:var(--gold)}
+    .login-box button{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer;transition:.2s}
+    .login-box button:hover{background:#b91c1c}
+    .login-error{color:var(--accent);font-size:12px;text-align:center;margin-top:8px;display:none}
+
+    /* 主界面 */
+    .app{display:none;max-width:1400px;margin:0 auto;padding:16px}
+    .app.visible{display:block}
+
+    /* 会员到期遮罩 */
+    .expired-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:1500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+    .expired-overlay.hidden{display:none}
+    .expired-overlay h2{color:var(--accent);font-size:28px}
+    .expired-overlay p{color:#999;font-size:14px}
+    .expired-overlay button{padding:14px 48px;background:var(--gold);color:#000;border:none;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;transition:.2s}
+    .expired-overlay button:hover{background:#e0c060}
+
+    /* 头部 */
+    .header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+    .header h1{color:var(--gold);font-size:22px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+
+    /* 会员状态标签 */
+    .member-badge{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700}
+    .member-badge.active{background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:var(--green)}
+    .member-badge.expired{background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.3);color:var(--accent)}
+    .member-remaining{font-size:11px;color:var(--gold);margin-left:8px}
+    .btn-recharge{background:var(--gold);color:#000;border:none;padding:6px 14px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;transition:.2s}
+    .btn-recharge:hover{background:#e0c060}
+
+    /* 统计卡片 */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+    .stat-card .val{font-size:32px;font-weight:900;color:var(--gold)}
+    .stat-card .lbl{font-size:12px;color:#666;margin-top:4px}
+    .stat-card.online .val{color:var(--green)}
+
+    .main-grid{display:grid;grid-template-columns:1fr 380px;gap:16px}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}
+    .panel h3{color:var(--gold);font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{text-align:left;padding:8px 6px;border-bottom:2px solid var(--border);color:#888;font-weight:600}
+    td{padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.05)}
+    .badge{padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+    .badge.online{background:rgba(34,197,94,.15);color:var(--green)}
+    .badge.offline{background:rgba(255,255,255,.05);color:#666}
+
+    .btn{background:var(--accent);color:#fff;border:none;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;transition:.2s}
+    .btn:hover{opacity:.8}
+    .btn.sm{padding:3px 10px;font-size:11px}
+    .btn.blue{background:var(--blue)} .btn.green{background:var(--green)} .btn.orange{background:var(--orange)}
+
+    .scanner-area{position:relative;width:100%;height:240px;background:#000;border-radius:8px;overflow:hidden;margin-bottom:12px}
+    .scanner-area video{width:100%;height:100%;object-fit:cover}
+    .scan-line{position:absolute;top:0;left:10%;width:80%;height:2px;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:scan 2s linear infinite}
+    @keyframes scan{0%{top:5%}50%{top:90%}100%{top:5%}}
+
+    .cmd-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+    .cmd-row select,.cmd-row input{padding:6px 10px;background:#000;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;min-width:100px}
+
+    /* 充值页面 */
+    .recharge-page{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1800;display:none;align-items:center;justify-content:center}
+    .recharge-page.show{display:flex}
+    .recharge-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto}
+    .recharge-box h2{color:var(--gold);font-size:22px;margin-bottom:16px;text-align:center}
+    .plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+    .plan-card{border:2px solid var(--border);border-radius:12px;padding:16px 12px;text-align:center;cursor:pointer;transition:.2s}
+    .plan-card:hover{border-color:var(--gold)}
+    .plan-card.selected{border-color:var(--gold);background:rgba(201,168,76,0.08)}
+    .plan-card .plan-name{font-size:16px;font-weight:700;color:var(--gold);margin-bottom:4px}
+    .plan-card .plan-days{font-size:12px;color:#888}
+    .plan-card .plan-price{font-size:24px;font-weight:900;color:var(--text);margin:8px 0}
+    .plan-card .plan-price span{font-size:12px;color:#888}
+    .plan-card .plan-tag{font-size:10px;padding:2px 8px;border-radius:8px;display:inline-block}
+    .plan-tag.best{background:rgba(236,72,153,.2);color:var(--pink)}
+    .plan-current{border-color:var(--green)!important;background:rgba(34,197,94,0.08)!important}
+    .plan-current::after{content:'当前';display:block;font-size:10px;color:var(--green);margin-top:4px}
+    .recharge-box .btn-confirm{width:100%;padding:14px;background:var(--gold);color:#000;border:none;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;margin-top:8px}
+    .recharge-box .btn-close{position:absolute;top:12px;right:16px;background:none;color:#888;border:none;font-size:24px;cursor:pointer}
+    .recharge-info{text-align:center;color:#888;font-size:12px;margin-top:12px}
+
+    /* 充值历史 */
+    .history-table{font-size:11px;max-height:200px;overflow-y:auto}
+    .history-table td{font-size:11px}
+
+    @media(max-width:900px){.main-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<!-- 登录 -->
+<div class="login-overlay" id="loginScreen">
+  <div class="login-box">
+    <h1>🏴 锦衣卫</h1>
+    <div class="sub">万年历设备后台管理系统</div>
+    <input id="loginUser" placeholder="用户名" value="admin">
+    <input id="loginPass" type="password" placeholder="密码" value="jinyiwei888">
+    <button onclick="doLogin()">登 录</button>
+    <div class="login-error" id="loginError">用户名或密码错误</div>
+  </div>
+</div>
+
+<!-- 会员过期遮罩 -->
+<div class="expired-overlay hidden" id="expiredOverlay">
+  <h2>⚠️ 会员已过期</h2>
+  <p id="expireMsg">您的会员已于 -- 到期，设备管理功能已暂停</p>
+  <button onclick="openRecharge()">💰 立即续费开通</button>
+</div>
+
+<!-- 充值弹窗 -->
+<div class="recharge-page" id="rechargePage">
+  <div class="recharge-box">
+    <h2>💰 充值缴费</h2>
+    <div class="plans-grid" id="plansGrid"></div>
+    <button class="btn-confirm" id="btnConfirmRecharge" onclick="doRecharge()">💳 确认充值</button>
+    <div class="recharge-info">充值后立即生效 · 会员到期自动续期</div>
+    <div style="margin-top:16px">
+      <h4 style="color:var(--gold);margin-bottom:8px">📋 充值记录</h4>
+      <div class="history-table" id="rechargeHistory"><div style="color:#666">暂无记录</div></div>
+    </div>
+    <div style="text-align:center;margin-top:16px">
+      <button onclick="closeRecharge()" style="background:none;border:1px solid var(--border);color:var(--text);padding:8px 24px;border-radius:8px;cursor:pointer">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 主界面 -->
+<div class="app" id="appMain">
+  <div class="header">
+    <h1>🏴 锦衣卫 <span style="font-size:12px;color:#666;">· 设备管理控制台</span></h1>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div id="memberBadge" class="member-badge expired">⏳ 加载中...</div>
+      <span id="memberRemaining" class="member-remaining"></span>
+      <button class="btn-recharge" onclick="openRecharge()">💰 充值</button>
+      <span style="color:#888;font-size:14px" id="adminName">admin</span>
+      <button onclick="logout()" style="background:none;border:1px solid var(--border);color:var(--text);padding:4px 12px;border-radius:6px;cursor:pointer">退出</button>
+    </div>
+  </div>
+
+  <!-- 统计 -->
+  <div class="stats-grid">
+    <div class="stat-card"><div class="val" id="stat-devices">0</div><div class="lbl">📱 注册设备</div></div>
+    <div class="stat-card online"><div class="val" id="stat-online">0</div><div class="lbl">🟢 在线设备</div></div>
+    <div class="stat-card"><div class="val" id="stat-reports">0</div><div class="lbl">📡 总上报次数</div></div>
+    <div class="stat-card"><div class="val" id="stat-cmds">0</div><div class="lbl">📋 待执行命令</div></div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="panel">
+        <h3>📱 设备列表 <button class="btn sm blue" onclick="refreshAll()" style="margin-left:auto">🔄 刷新</button></h3>
+        <div style="overflow-x:auto"><table><thead><tr>
+          <th>设备</th><th>平台</th><th>IMEI</th><th>状态</th><th>上报</th><th>最后在线</th><th>操作</th>
+        </tr></thead><tbody id="deviceTable"><tr><td colspan="7" style="color:#666;text-align:center">加载中...</td></tr></tbody></table></div>
+      </div>
+      <div class="panel">
+        <h3>📋 命令日志</h3>
+        <div id="cmdLog" style="font-size:11px;max-height:200px;overflow-y:auto"><div style="color:#666">暂无记录</div></div>
+      </div>
+    </div>
+
+    <div>
+      <!-- 扫码 -->
+      <div class="panel">
+        <h3>📷 扫码关联 <button class="btn sm green" id="btnStartScan" onclick="startScan()">▶ 开始扫码</button>
+            <button class="btn sm" id="btnStopScan" onclick="stopScan()" style="display:none">⏹ 停止</button></h3>
+        <div class="scanner-area" id="scannerArea"><div class="scan-line"></div></div>
+        <div class="scanner-result" id="scanResult" style="padding:8px;border-radius:6px;font-size:12px;margin-bottom:8px;display:none"></div>
+        <div style="font-size:11px;color:#666">对准前端"万年历"的QR码扫描，自动关联设备</div>
+      </div>
+
+      <!-- 远程控制 -->
+      <div class="panel">
+        <h3>🎮 远程控制</h3>
+        <div class="cmd-row"><select id="cmdTarget"><option value="">选择设备...</option></select></div>
+        <div class="cmd-row">
+          <select id="cmdType">
+            <option value="set_gnss">切换定位系统</option>
+            <option value="set_interval">修改上报间隔</option>
+            <option value="report_now">立即上报位置</option>
+            <option value="set_floor_height">修改层高</option>
+            <option value="ping">Ping检测</option>
+          </select>
+        </div>
+        <div class="cmd-row">
+          <input id="cmdParams" placeholder="参数" style="flex:1">
+          <button class="btn" onclick="sendCommand()">📤 下发</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="jsQR.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  安卓配置文件
+  复制到 android/app/src/main/AndroidManifest.xml
+  在 capacitor.config.ts 中已声明权限，Capacitor sync 会自动合并
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <!-- ===== 定位权限 (必须) ===== -->
+  <!-- 前台精确定位 -->
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <!-- 前台粗略定位 -->
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <!-- 后台定位 (Android 10+) -->
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+  <!-- 前台服务 (后台持续定位需要) -->
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
+  <!-- 网络权限 -->
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+  <!-- ===== 后台定位服务声明 (Android 14+) ===== -->
+  <application>
+    <!-- 前台服务类型: 定位 -->
+    <service
+      android:name="com.calendar.gps.LocationService"
+      android:foregroundServiceType="location"
+      android:exported="false" />
+  </application>
+
+</manifest>

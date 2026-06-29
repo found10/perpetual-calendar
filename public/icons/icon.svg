@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="80" fill="#C62828"/>
+  <rect x="77" y="77" width="358" height="358" rx="20" fill="#FFF8E7"/>
+  <rect x="77" y="77" width="358" height="120" rx="20" fill="#B71C1C"/>
+  <text x="256" y="380" text-anchor="middle" font-size="140" font-family="sans-serif" fill="#D4A017">历</text>
+  <circle cx="160" cy="137" r="20" fill="#4CAF50"/>
+  <text x="380" y="145" text-anchor="middle" font-size="30" font-family="sans-serif" fill="#FFF8E7">2026</text>
+</svg>

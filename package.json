@@ -1,0 +1,36 @@
+{
+  "name": "perpetual-calendar",
+  "version": "1.0.0",
+  "description": "万年历 + GPS定位追踪系统 - 支持 iOS / Android / 鸿蒙",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "cap:init": "npx cap init '万年历GPS' 'com.calendar.gps' --web-dir=public",
+    "cap:sync": "npx cap sync",
+    "cap:open:ios": "npx cap open ios",
+    "cap:open:android": "npx cap open android",
+    "cap:build:ios": "npx cap copy && npx cap sync ios",
+    "cap:build:android": "npx cap copy && npx cap sync android",
+    "cap:add:ios": "npx cap add ios",
+    "cap:add:android": "npx cap add android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/device": "^6.0.3",
+    "@capacitor/geolocation": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "@capacitor/local-notifications": "^6.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsqr": "^1.4.0",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.3",
+    "sql.js": "^1.14.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0",
+    "typescript": "^6.0.3"
+  }
+}

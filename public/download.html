@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>下载万年历 · 三端APP</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Microsoft YaHei',sans-serif;
+      background:linear-gradient(135deg,#1a0a0a 0%,#2d1515 30%,#1a0a2e 70%,#0d0d1a 100%);
+      color:#f0e6d3;min-height:100vh;padding:40px 16px}
+    .container{max-width:700px;margin:0 auto;text-align:center}
+    h1{font-size:32px;background:linear-gradient(180deg,#F0D060,#D4A017,#B8860B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+    .sub{color:#a09080;font-size:14px;margin-bottom:32px}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+    .card{background:rgba(30,15,15,0.85);border:1px solid rgba(212,160,23,0.3);border-radius:16px;padding:24px 16px;transition:.2s;text-decoration:none;color:inherit;display:block}
+    .card:hover{border-color:#D4A017;transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,0,0,0.4)}
+    .card .icon{font-size:48px;margin-bottom:12px}
+    .card h3{color:#F0D060;font-size:18px;margin-bottom:4px}
+    .card .size{font-size:11px;color:#666;margin-bottom:8px}
+    .card .desc{font-size:12px;color:#a09080;line-height:1.5}
+    .card .tag{display:inline-block;padding:2px 10px;border-radius:10px;font-size:10px;font-weight:700;margin-top:8px}
+    .tag.install{background:rgba(76,175,80,0.2);color:#66BB6A}
+    .tag.src{background:rgba(255,152,0,0.2);color:#FFA726}
+    .tag.best{background:rgba(236,72,153,0.2);color:#f472b6}
+    .guide{background:rgba(30,15,15,0.85);border:1px solid rgba(76,175,80,0.3);border-radius:16px;padding:20px;margin-top:16px;text-align:left}
+    .guide h3{color:#66BB6A;margin-bottom:12px}
+    .guide .step{display:flex;align-items:flex-start;gap:12px;padding:8px 0;font-size:13px;color:#c8c8d0;line-height:1.6}
+    .guide .step-num{background:rgba(76,175,80,0.2);color:#66BB6A;min-width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+    .guide code{background:rgba(0,0,0,0.3);padding:2px 8px;border-radius:4px;color:#F0D060;font-size:13px}
+    .back-link{color:#a09080;font-size:13px;margin-top:24px;display:inline-block}
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>📅 万年历 GPS</h1>
+  <p class="sub">公历·农历·四柱八字 · 北斗/GPS多系统定位 · 楼层·速度追踪</p>
+
+  <!-- PWA 推荐  -->
+  <div class="guide" style="border-color:rgba(236,72,153,0.4);margin-bottom:24px">
+    <h3 style="color:#f472b6">⭐ 推荐：PWA 免安装 (iOS / Android / 鸿蒙通用)</h3>
+    <div class="step"><span class="step-num">1</span><span>打开 <code>http://123.207.204.92:2121</code></span></div>
+    <div class="step"><span class="step-num">2</span><span>浏览器菜单 → <strong>「添加到主屏幕」</strong></span></div>
+    <div class="step"><span class="step-num">3</span><span>桌面出现「万年历」图标，点击即用</span></div>
+    <p style="font-size:12px;color:#888;margin-top:8px">
+      ✅ 无需下载安装包 &nbsp; ✅ 自动更新 &nbsp; ✅ GPS/定位/后台全支持 &nbsp; ✅ 桌面图标启动
+    </p>
+  </div>
+
+  <div class="cards">
+    <!-- Android -->
+    <a href="/downloads/perpetual-calendar-android.zip" class="card" download>
+      <div class="icon">🤖</div>
+      <h3>Android APK</h3>
+      <div class="size">289 KB · ZIP 源码</div>
+      <div class="desc">Android Studio → Gradle构建<br>支持后台持续定位</div>
+      <span class="tag src">需编译</span>
+    </a>
+
+    <!-- iOS -->
+    <a href="/downloads/perpetual-calendar-ios.zip" class="card" download>
+      <div class="icon">🍎</div>
+      <h3>iOS App</h3>
+      <div class="size">189 KB · ZIP 源码</div>
+      <div class="desc">macOS + Xcode → Archive<br>需Apple开发者账号</div>
+      <span class="tag src">需编译</span>
+    </a>
+
+    <!-- 鸿蒙 PWA -->
+    <a href="/" class="card">
+      <div class="icon">🔷</div>
+      <h3>鸿蒙 安装</h3>
+      <div class="size">PWA 在线安装</div>
+      <div class="desc">浏览器打开URL → 添加到桌面<br>无需下载 · 即装即用</div>
+      <span class="tag best">推荐 PWA</span>
+    </a>
+  </div>
+
+  <!-- 鸿蒙详细说明 -->
+  <div class="guide" style="border-color:rgba(59,130,246,0.3)">
+    <h3 style="color:#60a5fa">🔷 鸿蒙安装方法</h3>
+    <p style="font-size:13px;color:#a09080;margin-bottom:12px">鸿蒙系统通过 PWA 方式安装，与原生 App 体验一致：</p>
+    <div class="step"><span class="step-num" style="background:rgba(59,130,246,0.2);color:#60a5fa">1</span><span>鸿蒙手机打开 <strong>浏览器</strong>，访问 <code>http://123.207.204.92:2121</code></span></div>
+    <div class="step"><span class="step-num" style="background:rgba(59,130,246,0.2);color:#60a5fa">2</span><span>点击浏览器底部菜单 <strong>「⋮」</strong> → <strong>「添加至桌面」</strong></span></div>
+    <div class="step"><span class="step-num" style="background:rgba(59,130,246,0.2);color:#60a5fa">3</span><span>桌面出现「万年历」图标，点击启动（全屏，无浏览器边框）</span></div>
+    <p style="font-size:11px;color:#666;margin-top:8px">
+      如需原生 HAP 包（DevEco Studio 构建），下载 <a href="/downloads/perpetual-calendar-harmonyos.zip" style="color:#60a5fa">鸿蒙源码包</a>
+    </p>
+  </div>
+
+  <div style="margin-top:20px;padding:16px;background:rgba(30,15,15,0.85);border:1px solid rgba(255,152,0,0.2);border-radius:12px;text-align:left">
+    <h3 style="color:#FFA726;font-size:14px;margin-bottom:8px">🔧 源码构建说明</h3>
+    <p style="font-size:12px;color:#a09080;line-height:1.8">
+      <strong>Android:</strong> 解压 → Android Studio 打开 → Sync Gradle → <strong>Build → Build APK</strong><br>
+      <strong>iOS:</strong> 解压 → Xcode 打开 <code>App.xcworkspace</code> → 配置证书 → <strong>Product → Archive</strong><br>
+      <strong>鸿蒙:</strong> 解压 → DevEco Studio 打开 → <strong>Build → Build HAP</strong><br>
+      <strong>前置:</strong> 源码包解压后执行 <code>npm install && npx cap sync</code> 同步Web资源
+    </p>
+  </div>
+
+  <a href="/" class="back-link">← 返回万年历</a>
+</div>
+</body>
+</html>

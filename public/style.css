@@ -1,0 +1,1067 @@
+/* ============================================
+   万年历 + GPS定位系统 - 中国风样式
+   ============================================ */
+
+/* ========== 基础重置 ========== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #C62828;
+  --primary-light: #EF5350;
+  --gold: #D4A017;
+  --gold-light: #F0D060;
+  --bg-gradient: linear-gradient(135deg, #1a0a0a 0%, #2d1515 30%, #1a0a2e 70%, #0d0d1a 100%);
+  --card-bg: rgba(30, 15, 15, 0.85);
+  --card-border: rgba(212, 160, 23, 0.3);
+  --text: #f0e6d3;
+  --text-dim: #a09080;
+  --text-bright: #fff8e7;
+  --today-bg: #C62828;
+  --today-glow: rgba(198, 40, 40, 0.5);
+  --weekend-text: #EF5350;
+  --other-month-text: #6a5a4a;
+  --success: #4CAF50;
+  --error: #EF5350;
+  --warning: #FFA726;
+  --font-cn: 'Microsoft YaHei', 'PingFang SC', 'Hiragino Sans GB', 'SimHei', sans-serif;
+}
+
+body {
+  font-family: var(--font-cn);
+  background: var(--bg-gradient);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(212, 160, 23, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(198, 40, 40, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ========== 容器 ========== */
+.app-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ========== 头部 ========== */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  margin-bottom: 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+}
+
+.header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.app-title {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(180deg, #F0D060 0%, #D4A017 50%, #B8860B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.app-subtitle {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.header-right {
+  text-align: right;
+}
+
+.lunar-today {
+  font-size: 15px;
+  color: var(--gold-light);
+  line-height: 1.6;
+}
+
+/* ========== 主布局 ========== */
+.main-content {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* ========== 日历卡片 ========== */
+.calendar-card {
+  flex: 1;
+  min-width: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.nav-group {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(212, 160, 23, 0.3);
+  background: rgba(212, 160, 23, 0.1);
+  color: var(--gold-light);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-btn:hover {
+  background: rgba(212, 160, 23, 0.25);
+  border-color: var(--gold);
+  transform: scale(1.05);
+}
+
+.nav-btn:active {
+  transform: scale(0.95);
+}
+
+.nav-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.calendar-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 2px;
+}
+
+.year-select {
+  padding: 4px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--gold-light);
+  border: 1px solid rgba(212, 160, 23, 0.3);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: var(--font-cn);
+  cursor: pointer;
+  outline: none;
+}
+
+.year-select option {
+  background: #2d1515;
+  color: var(--text);
+}
+
+.btn-today {
+  padding: 8px 18px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: var(--font-cn);
+  transition: all 0.2s;
+}
+
+.btn-today:hover {
+  background: var(--primary-light);
+  box-shadow: 0 0 15px rgba(198, 40, 40, 0.4);
+}
+
+/* ========== 星期表头 ========== */
+.week-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.week-col {
+  text-align: center;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gold-light);
+  border-bottom: 2px solid rgba(212, 160, 23, 0.2);
+}
+
+.weekend-col {
+  color: var(--weekend-text);
+}
+
+/* ========== 日历网格 ========== */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendar-day {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  border: 2px solid transparent;
+  min-height: 72px;
+}
+
+.calendar-day:hover {
+  background: rgba(212, 160, 23, 0.1);
+  border-color: rgba(212, 160, 23, 0.3);
+  transform: scale(1.04);
+  z-index: 2;
+}
+
+.calendar-day.other-month {
+  opacity: 0.35;
+}
+
+.calendar-day.other-month:hover {
+  opacity: 0.6;
+}
+
+.calendar-day.today {
+  background: var(--today-bg);
+  color: #fff;
+  border-color: var(--today-bg);
+  box-shadow: 0 0 20px var(--today-glow);
+  z-index: 1;
+}
+
+.calendar-day.today .day-num {
+  color: #fff;
+  font-weight: 900;
+}
+
+.calendar-day.today .day-lunar {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.calendar-day.weekend .day-num {
+  color: var(--weekend-text);
+}
+
+.calendar-day.today.weekend .day-num {
+  color: #fff;
+}
+
+.day-num {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.day-lunar {
+  font-size: 11px;
+  margin-top: 2px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  text-align: center;
+}
+
+.day-lunar.festival {
+  color: var(--primary-light);
+  font-weight: 600;
+}
+
+.day-lunar.term {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.day-lunar.lunar-month {
+  color: var(--gold-light);
+}
+
+.calendar-day.solar-term {
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+/* ========== 日期详情 ========== */
+.day-detail {
+  margin-top: 16px;
+  padding: 14px 18px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--text-dim);
+  min-height: 48px;
+  line-height: 1.8;
+}
+
+.day-detail strong {
+  color: var(--text-bright);
+}
+
+.festival-tag {
+  color: var(--primary-light);
+  font-weight: 600;
+}
+
+.term-tag {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+/* 四柱八字样式 */
+.pillar-label {
+  font-size: 10px;
+  color: #a09080;
+  letter-spacing: 0.5px;
+}
+
+.pillar-detail {
+  font-size: 13px;
+  color: var(--gold-light);
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+/* ========== GPS面板 ========== */
+.gps-panel {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 18px;
+  backdrop-filter: blur(10px);
+}
+
+.panel-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold-light);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* GPS状态指示点 */
+.gps-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #666;
+  transition: all 0.3s;
+}
+
+.gps-dot.active {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 4px rgba(76, 175, 80, 0.4); }
+  50% { box-shadow: 0 0 12px rgba(76, 175, 80, 0.8); }
+}
+
+/* 状态文本 */
+.gps-status-text, .send-status {
+  font-size: 13px;
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.status-pending { color: var(--text-dim); background: rgba(0,0,0,0.2); }
+.status-active { color: var(--success); background: rgba(76, 175, 80, 0.1); }
+.status-error { color: var(--error); background: rgba(239, 83, 80, 0.1); }
+.status-sending { color: var(--warning); background: rgba(255, 167, 38, 0.1); }
+.status-success { color: var(--success); background: rgba(76, 175, 80, 0.1); }
+
+/* 信息网格 */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.info-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-bright);
+  font-variant-numeric: tabular-nums;
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+
+/* 发送统计 */
+.send-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.stat-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.btn-send {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, var(--primary), #B71C1C);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: var(--font-cn);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-send:hover {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  box-shadow: 0 4px 15px rgba(198, 40, 40, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-send:active {
+  transform: scale(0.97);
+}
+
+/* 发送日志 */
+.send-log-list {
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.send-log-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.send-log-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.send-log-list::-webkit-scrollbar-thumb {
+  background: rgba(212, 160, 23, 0.3);
+  border-radius: 2px;
+}
+
+.send-log-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.log-success { background: rgba(76, 175, 80, 0.08); }
+.log-error { background: rgba(239, 83, 80, 0.08); }
+.log-info { background: transparent; color: var(--text-dim); }
+
+.log-time {
+  color: var(--text-dim);
+  font-family: 'Consolas', monospace;
+  min-width: 60px;
+}
+
+.log-icon {
+  font-size: 11px;
+}
+
+.log-msg {
+  flex: 1;
+}
+
+/* ========== 底部 ========== */
+.app-footer {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 24px;
+  padding: 16px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* ========== 设备信息卡片 ========== */
+.device-card {
+  border-color: rgba(100, 180, 255, 0.3);
+}
+
+.device-card .panel-title {
+  color: #64b5f6;
+}
+
+.device-id-value {
+  font-size: 12px !important;
+  font-family: 'Consolas', 'Courier New', monospace;
+  word-break: break-all;
+}
+
+/* ========== QR码卡片 ========== */
+.qrcode-card {
+  border-color: rgba(100, 180, 255, 0.3);
+}
+
+.qrcode-card .panel-title {
+  color: #64b5f6;
+}
+
+.qrcode-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  background: #FFF8E7;
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.qrcode-img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.qrcode-img[src=""],
+.qrcode-img:not([src]) {
+  display: none;
+}
+
+.qrcode-loading {
+  color: #999;
+  font-size: 14px;
+}
+
+.qrcode-id-text {
+  font-size: 10px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  color: var(--gold-light);
+  word-break: break-all;
+  text-align: center;
+  padding: 6px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.btn-qr-refresh {
+  width: 100%;
+  padding: 8px;
+  background: rgba(100, 180, 255, 0.15);
+  color: #64b5f6;
+  border: 1px solid rgba(100, 180, 255, 0.3);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: var(--font-cn);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-qr-refresh:hover {
+  background: rgba(100, 180, 255, 0.25);
+  border-color: #64b5f6;
+}
+
+.qrcode-hint {
+  display: block;
+  font-size: 10px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: 6px;
+}
+
+/* ========== GNSS 选择器 ========== */
+.gnss-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.gnss-label {
+  font-size: 12px;
+  color: var(--gold-light);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.gnss-select {
+  flex: 1;
+  padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-bright);
+  border: 1px solid rgba(212, 160, 23, 0.3);
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: var(--font-cn);
+  cursor: pointer;
+  outline: none;
+}
+
+.gnss-select option {
+  background: #2d1515;
+  color: var(--text);
+}
+
+.gnss-select:focus {
+  border-color: var(--gold);
+}
+
+/* ========== 楼层计算 ========== */
+.floor-section {
+  margin-top: 14px;
+}
+
+.floor-divider {
+  height: 1px;
+  background: rgba(212, 160, 23, 0.15);
+  margin-bottom: 12px;
+}
+
+.floor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.floor-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold-light);
+}
+
+.btn-calibrate {
+  padding: 3px 10px;
+  background: rgba(76, 175, 80, 0.15);
+  color: #66BB6A;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 12px;
+  font-size: 11px;
+  font-family: var(--font-cn);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-calibrate:hover {
+  background: rgba(76, 175, 80, 0.25);
+  border-color: #66BB6A;
+}
+
+.floor-main {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.floor-number {
+  font-size: 36px;
+  font-weight: 900;
+  background: linear-gradient(180deg, #66BB6A 0%, #43A047 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.floor-cal-status {
+  text-align: center;
+  font-size: 11px;
+  padding: 3px 0;
+  margin-bottom: 8px;
+}
+
+.cal-pending { color: var(--warning); }
+.cal-ok { color: var(--success); }
+
+.info-grid-3col {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.floor-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.floor-height-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.floor-height-select {
+  flex: 1;
+  padding: 4px 6px;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-bright);
+  border: 1px solid rgba(212, 160, 23, 0.2);
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: var(--font-cn);
+  cursor: pointer;
+  outline: none;
+}
+
+.floor-height-select option {
+  background: #2d1515;
+  color: var(--text);
+}
+
+/* ========== 速度面板 ========== */
+.speed-card {
+  border-color: rgba(255, 152, 0, 0.3);
+}
+
+.speed-card .panel-title { color: #FF9800; }
+
+.speed-main {
+  text-align: center;
+  padding: 4px 0;
+}
+
+.speed-kmh {
+  font-size: 42px;
+  font-weight: 900;
+  background: linear-gradient(180deg, #FF9800 0%, #F57C00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-variant-numeric: tabular-nums;
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.speed-unit {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-left: 2px;
+}
+
+.speed-secondary {
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.speed-ms-text {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: 'Consolas', monospace;
+}
+
+/* 速度条 */
+.speed-bar-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  margin: 8px 0 2px;
+  overflow: hidden;
+}
+
+.speed-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease, background 0.6s ease;
+  min-width: 2px;
+}
+
+.speed-bar-fill.speed-static { background: #64B5F6; }
+.speed-bar-fill.speed-walk { background: #66BB6A; }
+.speed-bar-fill.speed-bike { background: #FFEE58; }
+.speed-bar-fill.speed-car { background: #FF9800; }
+.speed-bar-fill.speed-highway { background: #EF5350; }
+.speed-bar-fill.speed-train { background: #AB47BC; }
+.speed-bar-fill.speed-flight { background: #EC407A; }
+
+.speed-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: rgba(160,144,128,0.4);
+  margin-bottom: 10px;
+}
+
+/* 速度等级 */
+.speed-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.speed-level {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.speed-trend {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.trend-steady { color: var(--text-dim); }
+.trend-up { color: #EF5350; }
+.trend-down { color: #66BB6A; }
+
+/* 最高速度 */
+.speed-max-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.speed-max-label {
+  color: var(--text-dim);
+}
+
+.speed-max-value {
+  color: var(--gold-light);
+  font-weight: 600;
+}
+
+.btn-reset-speed {
+  margin-left: auto;
+  padding: 2px 8px;
+  background: rgba(255,152,0,0.12);
+  color: #FF9800;
+  border: 1px solid rgba(255,152,0,0.25);
+  border-radius: 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-reset-speed:hover {
+  background: rgba(255,152,0,0.25);
+}
+
+/* ========== 定位权限弹窗 ========== */
+.permission-block {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.permission-box {
+  background: var(--card-bg, #111118);
+  border: 1px solid var(--card-border, #1a1a2e);
+  border-radius: 20px;
+  padding: 32px 24px;
+  max-width: 400px;
+  text-align: center;
+}
+.permission-box .perm-icon { font-size: 64px; margin-bottom: 12px; }
+.permission-box h2 { color: var(--gold-light, #F0D060); font-size: 22px; margin-bottom: 8px; }
+.permission-box p { color: #a09080; font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+.perm-btn-allow {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #C62828, #B71C1C);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: .2s;
+}
+.perm-btn-allow:hover { transform: scale(1.02); box-shadow: 0 4px 20px rgba(198,40,40,0.4); }
+.perm-btn-skip {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  color: #666;
+  border: 1px solid #333;
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+.perm-hint {
+  font-size: 11px;
+  color: #555;
+  line-height: 1.7;
+  text-align: left;
+  padding: 10px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+}
+.perm-hint strong { color: #FFA726; }
+
+/* ========== 响应式 ========== */
+@media (max-width: 900px) {
+  .main-content {
+    flex-direction: column;
+  }
+
+  .gps-panel {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .panel-card {
+    flex: 1;
+    min-width: 250px;
+  }
+
+  .calendar-day {
+    min-height: 50px;
+  }
+
+  .day-num {
+    font-size: 15px;
+  }
+
+  .day-lunar {
+    font-size: 10px;
+  }
+
+  .app-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .header-right {
+    text-align: center;
+  }
+
+  .app-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-container {
+    padding: 10px;
+  }
+
+  .calendar-card {
+    padding: 12px;
+  }
+
+  .calendar-title {
+    font-size: 18px;
+  }
+
+  .calendar-day {
+    min-height: 40px;
+    border-radius: 6px;
+  }
+
+  .day-num {
+    font-size: 13px;
+  }
+
+  .day-lunar {
+    font-size: 9px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}

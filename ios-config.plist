@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  iOS 配置片段
+  复制以下内容到 Xcode 项目的 Info.plist 中
+  或在 capacitor.config.ts 同步后自动包含
+
+  关键配置:
+  1. Privacy - Location Always and When In Use Usage Description
+  2. Privacy - Location When In Use Usage Description
+  3. UIBackgroundModes > location (后台定位)
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- ===== 定位权限描述 (必需) ===== -->
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>万年历需要获取您的位置信息以提供GPS定位追踪服务</string>
+
+  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+  <string>万年历需要在后台持续获取位置信息，以定期向服务器上报卫星定位数据</string>
+
+  <key>NSLocationAlwaysUsageDescription</key>
+  <string>万年历需要在后台持续获取位置信息</string>
+
+  <!-- ===== 后台模式: 定位更新 ===== -->
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>location</string>
+    <string>fetch</string>
+    <string>processing</string>
+  </array>
+
+  <!-- ===== 应用配置 ===== -->
+  <key>UIStatusBarStyle</key>
+  <string>UIStatusBarStyleLightContent</string>
+
+  <key>UIViewControllerBasedStatusBarAppearance</key>
+  <false/>
+
+  <!-- 允许HTTP明文请求 (开发环境) -->
+  <key>NSAppTransportSecurity</key>
+  <dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+  </dict>
+
+  <!-- 后台任务标识 -->
+  <key>BGTaskSchedulerPermittedIdentifiers</key>
+  <array>
+    <string>com.calendar.gps.location-refresh</string>
+  </array>
+</dict>
+</plist>

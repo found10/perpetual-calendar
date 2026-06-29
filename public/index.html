@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#C62828">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="万年历GPS">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="description" content="万年历 · 农历节气 · GPS卫星定位">
+
+  <!-- iOS 图标 -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icons/icon-120x120.png">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+
+  <title>万年历 · GPS定位</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* ===== 移动端安全区适配 ===== */
+    :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+    body {
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+      padding-left: var(--safe-left);
+      padding-right: var(--safe-right);
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    /* 原生App状态栏占位 */
+    .status-bar-placeholder {
+      display: none;
+      height: var(--safe-top);
+      background: #1a0a0a;
+    }
+    body.capacitor-native .status-bar-placeholder {
+      display: block;
+    }
+    /* 移动端滚动优化 */
+    .send-log-list {
+      -webkit-overflow-scrolling: touch;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 定位权限强制弹窗 -->
+  <div id="permission-block" class="permission-block">
+    <div class="permission-box">
+      <div class="perm-icon">🛰️</div>
+      <h2>需要定位权限</h2>
+      <p>万年历需要获取您的位置信息<br>以提供GPS追踪、楼层计算、速度监测等功能</p>
+      <button class="perm-btn-allow" id="perm-btn-allow" onclick="
+        if(typeof GPS!=='undefined'&&GPS.forceRequestPermission)GPS.forceRequestPermission();
+        else{navigator.geolocation.getCurrentPosition(function(){location.reload()},function(){alert('请在系统设置中开启定位权限')},{enableHighAccuracy:true,timeout:20000})}
+      ">
+        📍 开启定位权限
+      </button>
+      <button class="perm-btn-skip" onclick="
+        document.getElementById('permission-block').style.display='none';
+        if(document.querySelector('.gps-panel'))document.querySelector('.gps-panel').style.opacity='1';
+      ">暂不开启</button>
+      <div class="perm-hint" id="perm-platform-hint">
+        <strong>点击上方按钮 → 浏览器弹出定位请求 → 点击「允许」</strong><br><br>
+        <span style="color:#FFA726">如已拒绝，需手动开启：</span><br>
+        🔷 鸿蒙: 设置 → 应用 → 浏览器/万年历 → 权限 → 位置<br>
+        🤖 Android: 设置 → 应用 → 权限管理 → 位置 → 允许<br>
+        🍎 iOS: 设置 → 隐私 → 定位服务 → 浏览器 → 允许
+      </div>
+    </div>
+  </div>
+
+  <!-- 状态栏占位 (原生App时显示) -->
+  <div class="status-bar-placeholder"></div>
+
+  <div class="app-container">
+
+    <!-- ========== 头部 ========== -->
+    <header class="app-header">
+      <div class="header-left">
+        <h1 class="app-title">📅 万年历</h1>
+        <span class="app-subtitle">公历 · 农历 · 节气 · 节日</span>
+        <span id="platform-badge" class="platform-badge"></span>
+      </div>
+      <div class="header-right">
+        <div id="lunar-today" class="lunar-today">加载中...</div>
+      </div>
+    </header>
+
+    <!-- ========== 日历主体 ========== -->
+    <main class="main-content">
+      <div class="calendar-card">
+
+        <!-- 导航栏 -->
+        <div class="calendar-nav">
+          <div class="nav-group">
+            <button id="btn-prev-year" class="nav-btn" title="上一年">◀◀</button>
+            <button id="btn-prev-month" class="nav-btn" title="上一月">◀</button>
+          </div>
+
+          <div class="nav-center">
+            <h2 id="calendar-title" class="calendar-title">2026年 6月</h2>
+            <select id="select-year" class="year-select"></select>
+          </div>
+
+          <div class="nav-group">
+            <button id="btn-next-month" class="nav-btn" title="下一月">▶</button>
+            <button id="btn-next-year" class="nav-btn" title="下一年">▶▶</button>
+          </div>
+
+          <button id="btn-today" class="btn-today">今天</button>
+        </div>
+
+        <!-- 星期表头 -->
+        <div class="week-header">
+          <span class="week-col weekend-col">日</span>
+          <span class="week-col">一</span>
+          <span class="week-col">二</span>
+          <span class="week-col">三</span>
+          <span class="week-col">四</span>
+          <span class="week-col">五</span>
+          <span class="week-col weekend-col">六</span>
+        </div>
+
+        <!-- 日期网格 -->
+        <div id="calendar-grid" class="calendar-grid"></div>
+
+        <!-- 日期详情 -->
+        <div id="day-detail" class="day-detail">
+          点击日期查看详情
+        </div>
+      </div>
+
+      <!-- ========== 右侧面板 ========== -->
+      <aside class="gps-panel">
+
+        <!-- 设备信息卡片 -->
+        <div class="panel-card device-card">
+          <h3 class="panel-title">📱 设备信息</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">IMEI</span>
+              <span id="dev-imei" class="info-value device-id-value">检测中...</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">设备ID</span>
+              <span id="dev-id" class="info-value device-id-value">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">品牌/厂商</span>
+              <span id="dev-brand" class="info-value">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">设备型号</span>
+              <span id="dev-model" class="info-value">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">系统版本</span>
+              <span id="dev-os" class="info-value">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">平台</span>
+              <span id="dev-platform" class="info-value">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- QR码卡片 -->
+        <div class="panel-card qrcode-card">
+          <h3 class="panel-title">📱 唯一标识 QR码</h3>
+          <div class="qrcode-container">
+            <img id="qrcode-img" class="qrcode-img" src="" alt="QR码" />
+            <div id="qrcode-loading" class="qrcode-loading">生成中...</div>
+          </div>
+          <div id="qrcode-id" class="qrcode-id-text">--</div>
+          <button id="btn-refresh-qr" class="btn-qr-refresh">🔄 刷新QR码</button>
+          <span class="qrcode-hint">唯一标识 = 平台码 + 设备哈希 + 时间戳 + 随机数</span>
+        </div>
+
+        <!-- GPS状态卡片 -->
+        <div class="panel-card status-card">
+          <h3 class="panel-title">
+            <span id="gps-dot" class="gps-dot"></span>
+            🛰️ GPS 卫星定位
+            <span id="gps-platform" style="font-size:11px;opacity:0.6;margin-left:auto;"></span>
+          </h3>
+          <div id="gps-status" class="gps-status-text status-pending">初始化中...</div>
+
+          <!-- 卫星系统选择器 -->
+          <div class="gnss-selector">
+            <span class="gnss-label">🛰️ 定位系统:</span>
+            <select id="gnss-select" class="gnss-select">
+              <option value="AUTO">🚀 多系统融合</option>
+              <option value="GPS">🇺🇸 GPS (美国)</option>
+              <option value="BDS">🇨🇳 北斗 BDS</option>
+              <option value="GLONASS">🇷🇺 GLONASS (俄罗斯)</option>
+              <option value="GALILEO">🇪🇺 Galileo (欧盟)</option>
+            </select>
+          </div>
+
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">纬度 Latitude</span>
+              <span id="gps-lat" class="info-value">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">经度 Longitude</span>
+              <span id="gps-lng" class="info-value">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">海拔 Altitude</span>
+              <span id="gps-alt" class="info-value">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">速度 Speed</span>
+              <span id="gps-speed" class="info-value">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">方向 Heading</span>
+              <span id="gps-heading" class="info-value">--</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">精度 Accuracy</span>
+              <span id="gps-accuracy" class="info-value">--</span>
+            </div>
+          </div>
+
+          <!-- 楼层计算 -->
+          <div class="floor-section">
+            <div class="floor-divider"></div>
+            <div class="floor-header">
+              <span class="floor-title">🏢 楼层计算</span>
+              <button id="btn-calibrate-floor" class="btn-calibrate" title="手动校准：将当前位置设为地面层">📍 校准</button>
+            </div>
+            <div class="floor-main">
+              <span class="floor-number" id="floor-label">--</span>
+            </div>
+            <div id="floor-cal-progress" class="floor-cal-status cal-pending">⏳ 校准中 0%</div>
+            <div class="info-grid info-grid-3col">
+              <div class="info-item">
+                <span class="info-label">基准海拔</span>
+                <span id="floor-ground" class="info-value">--</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">层高</span>
+                <span id="floor-height" class="info-value">3.0 m</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">数据源</span>
+                <span id="floor-source" class="info-value">--</span>
+              </div>
+            </div>
+            <div class="floor-controls">
+              <label class="floor-height-label">层高设置:</label>
+              <select id="floor-height-select" class="floor-height-select">
+                <option value="2.8">2.8m (住宅)</option>
+                <option value="3.0" selected>3.0m (标准)</option>
+                <option value="3.3">3.3m (高层住宅)</option>
+                <option value="3.6">3.6m (写字楼)</option>
+                <option value="4.2">4.2m (商业)</option>
+                <option value="5.0">5.0m (大堂)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 速度面板 -->
+        <div class="panel-card speed-card">
+          <h3 class="panel-title">⚡ 实时速度</h3>
+          <div class="speed-main">
+            <span id="speed-kmh" class="speed-kmh">0.0</span>
+            <span class="speed-unit">km/h</span>
+          </div>
+          <div class="speed-secondary">
+            <span id="speed-ms" class="speed-ms-text">0.00 m/s</span>
+          </div>
+          <!-- 速度进度条 -->
+          <div class="speed-bar-track">
+            <div id="speed-bar-fill" class="speed-bar-fill speed-static" style="width:0%"></div>
+          </div>
+          <div class="speed-bar-labels">
+            <span>0</span><span>50</span><span>100</span><span>150</span><span>200 km/h</span>
+          </div>
+          <!-- 速度等级 + 趋势 -->
+          <div class="speed-info-row">
+            <span id="speed-level" class="speed-level speed-static">🟦 ⏸️ 静止</span>
+            <span id="speed-trend" class="speed-trend trend-steady">→ 匀速</span>
+          </div>
+          <!-- 最高速度 -->
+          <div class="speed-max-row">
+            <span class="speed-max-label">🏆 最高速度:</span>
+            <span id="speed-max" class="speed-max-value">0.0 km/h</span>
+            <button id="btn-reset-speed" class="btn-reset-speed" title="重置最高速度">↺</button>
+          </div>
+        </div>
+
+        <div class="panel-card send-card">
+          <h3 class="panel-title">📡 服务器上报</h3>
+          <div id="send-status" class="send-status status-pending">等待发送...</div>
+
+          <div class="send-stats">
+            <div class="stat-item">
+              <span class="stat-label">成功发送</span>
+              <span id="gps-send-count" class="stat-value">0 次</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">失败次数</span>
+              <span id="gps-error-count" class="stat-value">0 次</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">更新时间</span>
+              <span id="gps-time" class="stat-value">--</span>
+            </div>
+          </div>
+
+          <button id="btn-send-now" class="btn-send">📤 立即发送</button>
+        </div>
+
+        <div class="panel-card log-card">
+          <h3 class="panel-title">📋 发送日志</h3>
+          <div id="send-log-list" class="send-log-list">
+            <div class="send-log-item log-info">
+              <span class="log-time">--</span>
+              <span class="log-msg">等待启动...</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- ========== 底部 ========== -->
+    <footer class="app-footer">
+      <span>万年历覆盖范围: 1900年 - 2100年</span>
+      <span>GPS每60秒自动上报 · 支持后台定位</span>
+      <span>iOS · Android · 鸿蒙 三端通用</span>
+    </footer>
+  </div>
+
+  <!-- ========== 脚本加载 ========== -->
+  <script src="plugins/device-info.js"></script>
+  <script src="floor-calc.js"></script>
+  <script src="speed-tracker.js"></script>
+  <script src="lunar.js"></script>
+  <script src="gps.js"></script>
+  <script src="app.js"></script>
+
+  <!-- Capacitor 原生桥接 -->
+  <script>
+    // 检测Capacitor原生环境
+    (function() {
+      if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) {
+        document.body.classList.add('capacitor-native');
+        document.getElementById('platform-badge').textContent =
+          '📱 ' + Capacitor.getPlatform().toUpperCase();
+        console.log('[App] Capacitor原生环境:', Capacitor.getPlatform());
+      }
+    })();
+  </script>
+
+  <!-- 注册 Service Worker (PWA) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('[PWA] Service Worker 已注册:', reg.scope))
+          .catch(err => console.warn('[PWA] SW注册失败:', err));
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+node_modules/
+data/gps_tracks.db
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+ios/Pods/
+ios/App.xcworkspace/
+*.log
+deploy-package.zip
+android-project.zip
+downloads/
+.DS_Store
