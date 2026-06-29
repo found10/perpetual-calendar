@@ -56,32 +56,6 @@
 </head>
 <body>
 
-  <!-- 定位权限强制弹窗 -->
-  <div id="permission-block" class="permission-block">
-    <div class="permission-box">
-      <div class="perm-icon">🛰️</div>
-      <h2>需要定位权限</h2>
-      <p>万年历需要获取您的位置信息<br>以提供GPS追踪、楼层计算、速度监测等功能</p>
-      <button class="perm-btn-allow" id="perm-btn-allow" onclick="
-        if(typeof GPS!=='undefined'&&GPS.forceRequestPermission)GPS.forceRequestPermission();
-        else{navigator.geolocation.getCurrentPosition(function(){location.reload()},function(){alert('请在系统设置中开启定位权限')},{enableHighAccuracy:true,timeout:20000})}
-      ">
-        📍 开启定位权限
-      </button>
-      <button class="perm-btn-skip" onclick="
-        document.getElementById('permission-block').style.display='none';
-        if(document.querySelector('.gps-panel'))document.querySelector('.gps-panel').style.opacity='1';
-      ">暂不开启</button>
-      <div class="perm-hint" id="perm-platform-hint">
-        <strong>点击上方按钮 → 浏览器弹出定位请求 → 点击「允许」</strong><br><br>
-        <span style="color:#FFA726">如已拒绝，需手动开启：</span><br>
-        🔷 鸿蒙: 设置 → 应用 → 浏览器/万年历 → 权限 → 位置<br>
-        🤖 Android: 设置 → 应用 → 权限管理 → 位置 → 允许<br>
-        🍎 iOS: 设置 → 隐私 → 定位服务 → 浏览器 → 允许
-      </div>
-    </div>
-  </div>
-
   <!-- 状态栏占位 (原生App时显示) -->
   <div class="status-bar-placeholder"></div>
 
