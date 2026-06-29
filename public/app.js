@@ -18,6 +18,7 @@
     bindEvents();
     renderYearSelect();
     renderCalendar();
+    renderQiMen();
     initDeviceInfo();
     initQRCode();
     initGPS();
@@ -349,6 +350,65 @@
     }
 
     panel.innerHTML = html;
+  }
+
+  // ===================== 奇门遁甲排盘 =====================
+
+  function renderQiMen() {
+    const QM = window.QiMen;
+    if (!QM) return;
+
+    const now = new Date();
+    const L = window.LunarCalendar;
+    const lunar = L.solarToLunar(now);
+    if (!lunar) return;
+
+    // 获取四柱
+    const pillars = {
+      year: lunar.yearPillar,
+      month: lunar.monthPillar,
+      day: lunar.dayPillar,
+      hour: lunar.hourPillar
+    };
+
+    const plate = QM.paiPan(now, pillars, null);
+
+    // 标题
+    const titleEl = document.getElementById('qimen-title');
+    if (titleEl) {
+      titleEl.textContent = plate.dunType + ' ' + plate.juNum + '局 · ' + plate.yuan +
+        ' · 值符:' + (plate.zhiFuXing||'') + ' · 值使:' + (plate.zhiShiMen||'');
+    }
+
+    // 九宫网格
+    const grid = document.getElementById('qimen-grid');
+    if (!grid) return;
+
+    // 九宫排列: 4 9 2 / 3 5 7 / 8 1 6
+    const layout = [4, 9, 2, 3, 5, 7, 8, 1, 6];
+
+    grid.innerHTML = layout.map(g => {
+      const info = plate.gongInfo[g] || {};
+      const h = (g === 5 || g === plate.zhiFuGong) ? ' highlight' : '';
+      return `<div class="qimen-cell${h}">
+        <div class="qm-tian">${info.tianPan||'-'}${info.diPan ? '<span class="qm-di">/'+info.diPan+'</span>' : ''}</div>
+        <div class="qm-men">${info.men||'-'}</div>
+        <div class="qm-xing">${info.xing||'-'}</div>
+        <div class="qm-shen">${info.shen||'-'}</div>
+        <div class="qm-gong">${info.name||''}</div>
+      </div>`;
+    }).join('');
+
+    // 信息栏
+    const infoEl = document.getElementById('qimen-info');
+    if (infoEl) {
+      infoEl.innerHTML =
+        '四柱: ' + plate.year + ' ' + plate.month + ' ' + plate.day + ' ' + plate.hour +
+        ' | ' + plate.dunType + plate.juNum + '局 ' + plate.yuan +
+        ' | 旬首' + (plate.xunShou||'') +
+        ' | 值符' + (plate.zhiFuXing||'') +
+        ' | 值使' + (plate.zhiShiMen||'');
+    }
   }
 
   // ===================== 设备信息初始化 =====================

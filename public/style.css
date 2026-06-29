@@ -929,6 +929,55 @@ body::before {
   background: rgba(255,152,0,0.25);
 }
 
+/* ========== 奇门遁甲排盘 ========== */
+.qimen-plate {
+  margin-top: 16px;
+  background: var(--card-bg);
+  border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 14px;
+  padding: 16px;
+}
+.qimen-header {
+  font-size: 16px;
+  font-weight: 700;
+  color: #a78bfa;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.qimen-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  max-width: 360px;
+  margin: 0 auto;
+}
+.qimen-cell {
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 6px;
+  padding: 6px 4px;
+  min-height: 52px;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.4;
+  background: rgba(0,0,0,0.15);
+}
+.qimen-cell .qm-tian { color: #F0D060; font-weight: 700; font-size: 13px; }
+.qimen-cell .qm-di { color: #888; font-size: 10px; }
+.qimen-cell .qm-men { color: #f472b6; font-weight: 600; }
+.qimen-cell .qm-xing { color: #60a5fa; }
+.qimen-cell .qm-shen { color: #f87171; font-weight: 600; }
+.qimen-cell .qm-gong { color: #6b7280; font-size: 9px; }
+.qimen-cell.highlight { border-color: #a78bfa; background: rgba(139,92,246,0.1); }
+.qimen-info {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #a09080;
+  text-align: center;
+  line-height: 1.6;
+}
+
 /* ========== 响应式 ========== */
 @media (max-width: 900px) {
   .main-content {
